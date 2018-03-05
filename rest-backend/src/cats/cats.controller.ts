@@ -25,6 +25,7 @@ import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 
 // Common: should it be imported as a module?
 import { ValidationPipe } from '../common/pipes/validation.pipe';
+import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
 
 // @UseFilters(new HttpExceptionFilter())
 //    (error filter class-scoped example)
@@ -37,6 +38,11 @@ export class CatsController {
   @Get()
   root(@Req() request) {
     return this.catsService.findAll();
+  }
+
+  @Get('/details/test/:id') // NOTE; won't work, fall into the next route
+  async findOne(@Param('id', new ParseIntPipe()) id) {
+    return await this.catsService.findOne(id);
   }
 
   @Get('/details/:name')

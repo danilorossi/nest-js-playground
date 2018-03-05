@@ -18,6 +18,14 @@ async function bootstrap() {
 	// NOTE: example of global-scoped pipe
 	// app.useGlobalPipes(new ValidationPipe());
 	// (doesn't setup pipes for gateways and micro services)
+	/* NOTE: if ValidationPipe is registered in the  SharedModule:
+	const app = await NestFactory.create(ApplicationModule);
+	const validationPipe = app
+	  .select(SharedModule)
+	  .get(ValidationPipe);
+
+	app.useGlobalPipes(validationPipe);
+	*/
 	await app.listen(3000);
 }
 bootstrap();
