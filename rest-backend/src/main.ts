@@ -13,6 +13,11 @@ async function bootstrap() {
 	// const loggerFilter = app
   //	.select(LoggerModule)
   //	.get(LoggerExceptionFilter);
+
+
+	// NOTE: example of global-scoped pipe
+	// app.useGlobalPipes(new ValidationPipe());
+	// (doesn't setup pipes for gateways and micro services)
 	await app.listen(3000);
 }
 bootstrap();

@@ -9,6 +9,7 @@ import {
   HttpStatus,
   HttpException,
   UseFilters,
+  UsePipes,
 } from '@nestjs/common';
 
 
@@ -20,8 +21,10 @@ import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
 import { ForbiddenException } from './exceptions/forbidden.exception';
-
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
+
+// Common: should it be imported as a module?
+import { ValidationPipe } from '../common/pipes/validation.pipe';
 
 // @UseFilters(new HttpExceptionFilter())
 //    (error filter class-scoped example)
@@ -53,7 +56,10 @@ export class CatsController {
 
   @HttpCode(204)
   @Post()
-  create(@Body() createCatDto: CreateCatDto) {
+  create(
+    // parma-scoped pipe
+    @Body((new ValidationPipe())) createCatDto: CreateCatDto
+  ) {
     this.catsService.create(createCatDto);
   }
 
@@ -61,6 +67,7 @@ export class CatsController {
   // but also class-scoped (check comment on top of
   // class declaration) or global-scoped
   @UseFilters(new HttpExceptionFilter())
+  @UsePipes(new ValidationPipe()) // method-scope pipe
   @Post('/fail')
   fail(@Body() createCatDto: CreateCatDto) {
     // Also, every unexpected error (not an HttpException or inherit)
