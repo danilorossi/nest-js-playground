@@ -8,6 +8,7 @@
               socket.emit('commands', { type: 'CHECK_COMMANDS_CHANNEL' });
               socket.emit('events', { type: 'CHECK_EVENTS_CHANNEL' });
           });
+         
           socket.on('events-stream', function(data) {
               console.log('events-stream', data);
           });

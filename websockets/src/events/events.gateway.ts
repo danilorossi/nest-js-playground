@@ -4,6 +4,9 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/map';
 
+const STREAM_COMPLETE_DELAY = 10000;
+const DATA_INTERVAL_DELAY = 500;
+
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayInit {
 
@@ -15,8 +18,13 @@ export class EventsGateway implements OnGatewayInit {
   onEvent(client, data): Observable<WsResponse<number>> {
     console.log('> MSG RECEIVED on events channel', data)
     const event = 'events-stream';
-    const response = [1, 2, 3];
-    return Observable.from(response).map(res => ({ event, data: res }));
+    return Observable.create(function(observer) {
+       // Indicate that there will be no more data)
+      setTimeout(() => observer.complete(), STREAM_COMPLETE_DELAY);
+
+      // Emit this value after some time
+      setInterval(() => observer.next(`[Payload="${Date.now()}"]`), DATA_INTERVAL_DELAY);
+    }).map(res => ({ event, data: res }));
   }
 
 }
