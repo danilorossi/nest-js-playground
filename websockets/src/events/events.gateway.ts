@@ -18,12 +18,16 @@ export class EventsGateway implements OnGatewayInit {
   onEvent(client, data): Observable<WsResponse<number>> {
     console.log('> MSG RECEIVED on events channel', data)
     const event = 'events-stream';
+    let intervalId = null;
     return Observable.create(function(observer) {
        // Indicate that there will be no more data)
-      setTimeout(() => observer.complete(), STREAM_COMPLETE_DELAY);
+      setTimeout(() => {
+        observer.complete();
+        intervalId && clearInterval(intervalId);
+      }, STREAM_COMPLETE_DELAY);
 
       // Emit this value after some time
-      setInterval(() => observer.next(`[Payload="${Date.now()}"]`), DATA_INTERVAL_DELAY);
+      intervalId = setInterval(() => observer.next(`[Payload="${Date.now()}"]`), DATA_INTERVAL_DELAY);
     }).map(res => ({ event, data: res }));
   }
 
