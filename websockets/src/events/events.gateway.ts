@@ -16,19 +16,32 @@ export class EventsGateway implements OnGatewayInit {
 
   @SubscribeMessage('events')
   onEvent(client, data): Observable<WsResponse<number>> {
-    console.log('> MSG RECEIVED on events channel', data)
     const event = 'events-stream';
-    let intervalId = null;
-    return Observable.create(function(observer) {
-       // Indicate that there will be no more data)
-      setTimeout(() => {
-        observer.complete();
-        intervalId && clearInterval(intervalId);
-      }, STREAM_COMPLETE_DELAY);
+    switch(data.type) {
 
-      // Emit this value after some time
-      intervalId = setInterval(() => observer.next(`[Payload="${Date.now()}"]`), DATA_INTERVAL_DELAY);
-    }).map(res => ({ event, data: res }));
+      case 'FORCE_STREAM':
+        console.log('> Client triggering a stream.');
+        let intervalId = null;
+        return Observable.create(function(observer) {
+           // Indicate that there will be no more data)
+          setTimeout(() => {
+            observer.complete();
+            intervalId && clearInterval(intervalId);
+          }, STREAM_COMPLETE_DELAY);
+
+          // Emit this value after some time
+          intervalId = setInterval(() => observer.next(`[Payload="${Date.now()}"]`), DATA_INTERVAL_DELAY);
+        }).map(res => ({ event, data: res }));
+
+      case 'CHECK_EVENTS_CHANNEL':
+        console.log('> New client connected to <events-stream> channel');
+        return { event, data: { msg: 'You are now connected to the <events-stream>> channel.' } };
+
+      default:
+        return { event, data };
+    }
+
+
   }
 
 }
